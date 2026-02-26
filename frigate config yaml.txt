@@ -1,0 +1,115 @@
+mqtt:
+  enabled: false
+
+# Отключаем тяжёлые функции для слабого ПК
+semantic_search:
+  enabled: false
+  model_size: small
+face_recognition:
+  enabled: true
+  model_size: small
+  detection_threshold: 0.6
+  min_area: 300
+lpr:
+  enabled: true
+  model_size: small
+  enhancement: 5
+classification:
+  bird:
+    enabled: false
+
+# Детектор на CPU (самый простой вариант)
+detectors:
+  cpu1:
+    type: cpu
+
+# Общие настройки детекта
+detect:
+  enabled: true
+  fps: 5
+
+# Запись ПО ДВИЖЕНИЮ (motion) + хранение детекций по объектам
+record:
+  enabled: true
+  alerts:
+    retain:
+      days: 14
+      mode: motion
+
+# "Detections" — хранение по объектам (то, что обычно нужно)
+  detections:
+    retain:
+      days: 14
+      mode: active_objects
+
+# Какие объекты отслеживать (чем меньше список — тем легче CPU)
+  continuous:
+    days: 0
+  motion:
+    days: 3
+objects:
+  track:
+    - person
+    - car
+    - lpr
+    - license_plate
+
+cameras:
+  zad-nomera:
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://admin:passwprd@192.168.111.111:554/cam/realmonitor?channel=1&subtype=0
+          roles: [detect]
+
+    objects:
+      track: [car]
+      filters:
+        car: {}
+
+    snapshots:
+      enabled: true
+      crop: true
+      retain:
+        default: 14   
+
+  krup-face:
+    enabled: true
+    ffmpeg:
+      inputs:
+        # detect = substream (дешево для CPU)
+        - path: rtsp://admin:passwprd@192.168.111.112:554/cam/realmonitor?channel=1&subtype=1&unicast=true&proto=Onvif
+          roles: [detect]
+          input_args:
+            - -rtsp_transport
+            - tcp
+
+        # record = основной поток (качество для архива)
+        - path: rtsp://admin:passwprd@192.168.111.112:554/cam/realmonitor?channel=1&subtype=0&unicast=true&proto=Onvif
+          roles: [record]
+          input_args:
+            - -rtsp_transport
+            - tcp
+    detect:
+      width: 720
+      height: 576
+      fps: 5   # можно не ставить, но полезно явно
+
+    objects:
+      track:
+        - person
+      filters:
+        person: {}
+
+    snapshots:
+      enabled: true
+      crop: true
+      retain:
+        default: 14
+version: 0.17-0
+go2rtc:
+  streams:
+    zad-nomera:
+      - rtsp://admin:passwprd@192.168.111.111:554/cam/realmonitor?channel=1&subtype=0
+    krup-face:
+      - rtsp://admin:passwprd@192.168.111.112:554/cam/realmonitor?channel=1&subtype=1&unicast=true&proto=Onvif
