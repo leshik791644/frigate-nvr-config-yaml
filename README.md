@@ -137,7 +137,7 @@ Frigate 0.17-0
 
 ---
 
-## 👉 **[НАЖМИТЕ ЗДЕСЬ ДЛЯ СКАЧИВАНИЯ CONFIG YAML](https://github.com/leshik791644/frigate-nvr-config-yaml/blob/main/frigate%20config%20yaml.txt)**
+## 👉 **[НАЖМИТЕ ЗДЕСЬ ДЛЯ СКАЧИВАНИЯ CONFIG YAML](https://github.com/leshik791644/frigate-nvr-config-yaml/blob/main/frigate%20configv2.yaml)**
 
 ---
 
